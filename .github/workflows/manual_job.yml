@@ -1,0 +1,44 @@
+name: Manual Python Task
+
+# 1. THE TRIGGER (The "Button")
+# 'workflow_dispatch' allows you to run this manually or via API
+on:
+  workflow_dispatch:
+    # 2. INPUTS (Optional Parameters you can send from Python)
+    inputs:
+      environment:
+        description: 'Environment to run on (dev/prod)'
+        required: true
+        default: 'dev'
+      username:
+        description: 'Who triggered this?'
+        required: false
+
+# 3. THE JOBS (The Work)
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step A: Check out your code (Download it to the runner)
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step B: Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      # Step C: Install Dependencies
+      - name: Install Libraries
+        run: |
+          pip install requests pandas
+
+      # Step D: Run your Script
+      # Notice how we access the INPUTS using ${{ github.event.inputs.name }}
+      - name: Run Python Script
+        run: |
+          echo "Running script for user: ${{ github.event.inputs.username }}"
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          python batch_processor.py
