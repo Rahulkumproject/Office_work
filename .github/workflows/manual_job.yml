@@ -1,23 +1,29 @@
-name: learning basics
+name: Run optum audit
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
 
 jobs:
-  my_first_job:
+  audit_job:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: List the files
-        run: |
-          echo "Listening the files:"
-          ls -R
-      - name: Setup the python
+      - name: Set up python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      - name: Run a python script
+      - name: Install dependencies
         run: |
-          print("hello world")
-        shell: python
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run batch processor
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: |
+          python batch_processor.py
+      - name: Upload results
+        uses: actions/upload-artifact@v3
+        with:
+          name: audit-results

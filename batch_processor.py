@@ -6,13 +6,12 @@ import os
 import json
 import glob
 import docx
-from dotenv import load_dotenv
 import pandas as pd
 from datetime import datetime
 
-load_dotenv()
 
-genai.configure(api_key=os.environ["api_key"])
+os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY") # Reads from the cloud environment
+genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 
 def read_word_file(file_path):
     doc=docx.Document(file_path)
